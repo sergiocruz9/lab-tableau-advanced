@@ -14,6 +14,7 @@
     <SchemaViewerObjectModel />
     <SetMembershipControl />
     <SheetIdentifierTracking />
+    <SortTagCleanup />
     <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
     <WindowsPersistSimpleIdentifiers />
     <WorksheetBackgroundTransparency />
@@ -439,6 +440,11 @@
       <column-instance column='[Gender]' derivation='None' name='[none:Gender:nk]' pivot='key' type='nominal' />
       <column-instance column='[Income]' derivation='None' name='[none:Income:qk]' pivot='key' type='quantitative' />
       <column-instance column='[State]' derivation='None' name='[none:State:nk]' pivot='key' type='nominal' />
+      <group caption='Acción (State)' hidden='true' name='[Action (State)]' name-style='unqualified' user:auto-column='sheet_link'>
+        <groupfilter function='crossjoin'>
+          <groupfilter function='level-members' level='[State]' />
+        </groupfilter>
+      </group>
       <group hidden='true' name='[Exclusiones (Customer Lifetime Value (copia),Gender,Income)]' name-style='unqualified' user:auto-column='exclude'>
         <groupfilter function='crossjoin'>
           <groupfilter function='level-members' level='[none:Customer Lifetime Value (copia)_5419448841516126208:qk]' />
@@ -885,6 +891,16 @@
   <mapsources>
     <mapsource name='Tableau' />
   </mapsources>
+  <actions>
+    <action caption='Filtro 1 (generado)' name='[Action1_91AAF1FB34F84358AFCF5063F729C1DA]'>
+      <activation auto-clear='true' type='on-select' />
+      <source dashboard='Dashboard 2' type='sheet' worksheet='Customer Count by State' />
+      <command command='tsc:tsl-filter'>
+        <param name='special-fields' value='all' />
+        <param name='target' value='Dashboard 2' />
+      </command>
+    </action>
+  </actions>
   <worksheets>
     <worksheet name='CLTV/Income Reg. Plot'>
       <layout-options>
@@ -906,10 +922,14 @@
             <column datatype='real' datatype-customized='true' name='[Customer Lifetime Value]' role='dimension' type='ordinal' />
             <column datatype='string' name='[Gender]' role='dimension' type='nominal' />
             <column datatype='integer' name='[Income]' role='measure' type='quantitative' />
+            <column datatype='string' name='[State]' role='dimension' semantic-role='[State].[Name]' type='nominal' />
             <column-instance column='[Customer Lifetime Value (copia)_5419448841516126208]' derivation='None' name='[none:Customer Lifetime Value (copia)_5419448841516126208:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Gender]' derivation='None' name='[none:Gender:nk]' pivot='key' type='nominal' />
             <column-instance column='[Income]' derivation='None' name='[none:Income:qk]' pivot='key' type='quantitative' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Action (State)]'>
+            <groupfilter function='level-members' level='[State]' user:ui-action-filter='[Action1_91AAF1FB34F84358AFCF5063F729C1DA]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
           <filter class='categorical' column='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Exclusiones (Customer Lifetime Value (copia),Gender,Income)]'>
             <groupfilter function='except' user:ui-domain='database' user:ui-enumeration='exclusive' user:ui-marker='enumerate'>
               <groupfilter function='crossjoin'>
@@ -932,6 +952,7 @@
           <slices>
             <column>[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Exclusiones (Customer Lifetime Value (copia),Gender,Income)]</column>
             <column>[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:Income:qk]</column>
+            <column>[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Action (State)]</column>
           </slices>
           <aggregation value='true' />
         </view>
@@ -1080,13 +1101,18 @@
             <column-instance column='[Customer (copia)_4959448360520036352]' derivation='CountD' name='[ctd:Customer (copia)_4959448360520036352:qk]' pivot='key' type='quantitative' />
             <column-instance column='[State]' derivation='None' name='[none:State:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <manual-sort column='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:State:nk]' direction='ASC'>
+            <dictionary>
+              <bucket>&quot;Arizona&quot;</bucket>
+              <bucket>&quot;California&quot;</bucket>
+              <bucket>&quot;Nevada&quot;</bucket>
+              <bucket>&quot;Oregon&quot;</bucket>
+              <bucket>&quot;Washington&quot;</bucket>
+            </dictionary>
+          </manual-sort>
           <aggregation value='true' />
         </view>
         <style>
-          <style-rule element='axis'>
-            <encoding attr='space' class='0' field='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Longitude (generated)]' field-type='quantitative' max='-9833638.3667176794' min='-14876639.554513706' projection='EPSG:3857' range-type='fixed' scope='cols' type='space' />
-            <encoding attr='space' class='0' field='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Latitude (generated)]' field-type='quantitative' max='6401609.3991674185' min='3509730.5815172195' projection='EPSG:3857' range-type='fixed' scope='rows' type='space' />
-          </style-rule>
           <style-rule element='map-layer'>
             <format attr='enabled' id='b01002_001e' value='false' />
             <format attr='enabled' id='b01002_002e' value='false' />
@@ -1261,6 +1287,7 @@
             <datasource caption='we_fn_use_c_marketing_customer_value_analysis' name='federated.0nv0zcv1ekx87w1cz7iaf0ac6roa' />
           </datasources>
           <datasource-dependencies datasource='federated.0nv0zcv1ekx87w1cz7iaf0ac6roa'>
+            <column datatype='string' name='[State]' role='dimension' semantic-role='[State].[Name]' type='nominal' />
             <column aggregation='CountD' caption='Total Claim Amount (copia)' datatype='real' datatype-customized='true' name='[Total Claim Amount (copia)_5419448841526116353]' role='measure' type='quantitative'>
               <calculation class='tableau' formula='FLOAT([Total Claim Amount])' />
             </column>
@@ -1269,6 +1296,16 @@
             <column-instance column='[Total Claim Amount (copia)_5419448841526116353]' derivation='None' name='[none:Total Claim Amount (copia)_5419448841526116353:qk]' pivot='key' type='quantitative' />
             <column-instance column='[Vehicle Size]' derivation='None' name='[none:Vehicle Size:nk]' pivot='key' type='nominal' />
           </datasource-dependencies>
+          <filter class='categorical' column='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Action (State)]'>
+            <groupfilter function='level-members' level='[State]' user:ui-action-filter='[Action1_91AAF1FB34F84358AFCF5063F729C1DA]' user:ui-enumeration='all' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='quantitative' column='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:Total Claim Amount (copia)_5419448841526116353:qk]' included-values='in-range'>
+            <max>1500.0</max>
+          </filter>
+          <slices>
+            <column>[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Action (State)]</column>
+            <column>[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:Total Claim Amount (copia)_5419448841526116353:qk]</column>
+          </slices>
           <aggregation value='true' />
         </view>
         <style>
@@ -1472,8 +1509,8 @@
       <zones>
         <zone h='100000' id='4' type-v2='layout-basic' w='100000' x='0' y='0'>
           <zone h='48372' id='7' param='horz' type-v2='layout-flow' w='98682' x='659' y='1303'>
-            <zone h='48372' id='3' param='vert' type-v2='layout-flow' w='85502' x='659' y='1303'>
-              <zone h='48372' id='5' name='Customer Count by State' w='85502' x='659' y='1303'>
+            <zone h='48372' id='3' param='vert' type-v2='layout-flow' w='98682' x='659' y='1303'>
+              <zone h='48372' id='5' name='Customer Count by State' w='98682' x='659' y='1303'>
                 <layout-cache minheight='244' minwidth='202' type-h='scalable' type-w='scalable' />
                 <zone-style>
                   <format attr='border-color' value='#000000' />
@@ -1483,18 +1520,27 @@
                 </zone-style>
               </zone>
             </zone>
-            <zone fixed-size='160' h='48372' id='6' is-fixed='true' param='vert' type-v2='layout-flow' w='13180' x='86161' y='1303'>
-              <zone h='20521' id='8' name='Customer Count by State' pane-specification-id='0' param='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:State:nk]' type-v2='color' w='13180' x='86161' y='1303'>
-                <zone-style>
-                  <format attr='border-color' value='#000000' />
-                  <format attr='border-style' value='none' />
-                  <format attr='border-width' value='0' />
-                  <format attr='margin' value='4' />
-                </zone-style>
-              </zone>
+          </zone>
+          <zone h='49022' id='9' layout-strategy-id='distribute-evenly' param='horz' type-v2='layout-flow' w='98682' x='659' y='49675'>
+            <zone h='49023' id='10' name='CLTV/Income Reg. Plot' w='49341' x='659' y='49674'>
+              <layout-cache minheight='198' minwidth='166' type-h='scalable' type-w='scalable' />
+              <zone-style>
+                <format attr='border-color' value='#000000' />
+                <format attr='border-style' value='none' />
+                <format attr='border-width' value='0' />
+                <format attr='margin' value='4' />
+              </zone-style>
+            </zone>
+            <zone h='49023' id='12' name='TClaimAm./VSize Box Pl.' w='49341' x='50000' y='49674'>
+              <layout-cache cell-count-w='3' non-cell-size-w='66' type-h='fixed' type-w='cell' />
+              <zone-style>
+                <format attr='border-color' value='#000000' />
+                <format attr='border-style' value='none' />
+                <format attr='border-width' value='0' />
+                <format attr='margin' value='4' />
+              </zone-style>
             </zone>
           </zone>
-          <zone h='49022' id='9' param='vert' type-v2='layout-flow' w='98682' x='659' y='49675' />
           <zone-style>
             <format attr='border-color' value='#000000' />
             <format attr='border-style' value='none' />
@@ -1502,6 +1548,8 @@
             <format attr='margin' value='8' />
           </zone-style>
         </zone>
+        <zone h='19218' id='8' name='Customer Count by State' pane-specification-id='0' param='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:State:nk]' type-v2='color' w='11532' x='26112' y='10586' />
+        <zone h='9446' id='11' name='CLTV/Income Reg. Plot' pane-specification-id='0' param='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[none:Gender:nk]' type-v2='color' w='11532' x='37974' y='49674' />
       </zones>
       <devicelayouts>
         <devicelayout auto-generated='true' name='Phone'>
@@ -1520,6 +1568,78 @@
         </devicelayout>
       </devicelayouts>
       <simple-id uuid='{1765CD22-9597-4844-B460-606DBC10474F}' />
+    </dashboard>
+    <dashboard name='Historia 1' type='storyboard'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run>Customer Insights </run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <style>
+        <style-rule element='story-point-caption'>
+          <format attr='width' value='411' />
+        </style-rule>
+      </style>
+      <size maxheight='964' maxwidth='1016' minheight='964' minwidth='1016' />
+      <zones>
+        <zone h='100000' id='2' type-v2='layout-basic' w='100000' x='0' y='0'>
+          <zone h='98340' id='1' param='vert' removable='false' type-v2='layout-flow' w='98426' x='787' y='830'>
+            <zone h='3423' id='3' type-v2='title' w='98426' x='787' y='830' />
+            <zone h='10477' id='4' is-fixed='true' paired-zone-id='5' removable='false' type-v2='flipboard-nav' w='98426' x='787' y='4253' />
+            <zone h='84440' id='5' paired-zone-id='4' removable='false' type-v2='flipboard' w='98426' x='787' y='14730'>
+              <flipboard active-id='4' nav-type='caption' show-nav-arrows='true'>
+                <story-points>
+                  <story-point caption='Client distribution by State. ' captured-sheet='Customer Count by State' id='2'>
+                    <capturedDeltas>
+                      <worksheet name='Customer Count by State'>
+                        <style delta-type='added'>
+                          <style-rule element='axis'>
+                            <encoding attr='space' class='0' field='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Latitude (generated)]' field-type='quantitative' max='6121891.5299673397' min='752254.70132195344' projection='EPSG:3857' range-type='fixed' scope='rows' type='space' />
+                            <encoding attr='space' class='0' field='[federated.0nv0zcv1ekx87w1cz7iaf0ac6roa].[Longitude (generated)]' field-type='quantitative' max='-9147041.2561284341' min='-14691848.031435717' projection='EPSG:3857' range-type='fixed' scope='cols' type='space' />
+                          </style-rule>
+                        </style>
+                      </worksheet>
+                    </capturedDeltas>
+                  </story-point>
+                  <story-point caption='Customer Lifetime Value vs Income' captured-sheet='CLTV/Income Reg. Plot' id='3' />
+                  <story-point caption='Box Plot for Total Claim Amount by Vehicle Size' captured-sheet='TClaimAm./VSize Box Pl.' id='4' />
+                </story-points>
+              </flipboard>
+            </zone>
+          </zone>
+          <zone-style>
+            <format attr='border-color' value='#000000' />
+            <format attr='border-style' value='none' />
+            <format attr='border-width' value='0' />
+            <format attr='margin' value='8' />
+          </zone-style>
+        </zone>
+        <zone flipboard-zone-id='5' h='12448' hidden='true' id='6' story-point-id='2' type-v2='text' w='33268' x='36811' y='21058'>
+          <formatted-text>
+            <run fontalignment='0' fontcolor='#000000' fontname='Benton Sans Book'>Here we can see the count of clients by State. We observe that California is the most dense with 3k customers, followed by Oregon (2.6k) &amp; Arizona 1.7k. </run>
+          </formatted-text>
+        </zone>
+        <zone flipboard-zone-id='5' forceUpdate='true' h='17116' hidden='true' id='7' story-point-id='3' type-v2='text' w='30413' x='46457' y='16598'>
+          <formatted-text>
+            <run fontalignment='0' fontsize='8'>Regression plot showing the relationship between income and CLTV. We can observe there is not a strong relation between both variables. CLTV for females tends to increase with income but the relationship is weak, a correlation is not evident. Same applies for males. </run>
+            <run>Æ&#10;</run>
+            <run fontalignment='0'>Æ&#10;</run>
+            <run fontalignment='0' fontsize='8'>CLTV has high variability, independent from the client´s income. </run>
+          </formatted-text>
+        </zone>
+        <zone flipboard-zone-id='5' h='31846' id='8' story-point-id='4' type-v2='text' w='33268' x='50098' y='59336'>
+          <formatted-text>
+            <run>Here we can observe the behavior of total claim amount by Vehicle Size category. 
+
+All three categories have means in a similar range, between 300 and 500. The plot also shows most total claims (75%) are located between 150 up to 680, considering all three categories. 
+
+We can observe that the three categories are skewed to the right. Meaning most total claims can be observed in the lower end of the total range, while having significant amount of variance in the upper quantile and very extreme outliers for all of the three categories. </run>
+          </formatted-text>
+        </zone>
+      </zones>
+      <simple-id uuid='{77EF2D75-0710-4E8E-963A-C2F0D0865952}' />
     </dashboard>
   </dashboards>
   <windows source-height='30'>
@@ -1731,14 +1851,25 @@
       </cards>
       <simple-id uuid='{12DC4951-C54D-4217-B5A9-D69CB9E6828E}' />
     </window>
-    <window class='dashboard' maximized='true' name='Dashboard 2'>
+    <window class='dashboard' name='Dashboard 2'>
       <viewpoints>
+        <viewpoint name='CLTV/Income Reg. Plot'>
+          <zoom type='entire-view' />
+        </viewpoint>
         <viewpoint name='Customer Count by State'>
           <zoom type='entire-view' />
         </viewpoint>
+        <viewpoint name='TClaimAm./VSize Box Pl.'>
+          <zoom type='entire-view' />
+        </viewpoint>
       </viewpoints>
-      <active id='9' />
+      <active id='5' />
       <simple-id uuid='{5EBF6BBA-AB2D-406E-8450-DD1C82F6C51B}' />
+    </window>
+    <window class='dashboard' maximized='true' name='Historia 1'>
+      <viewpoints />
+      <active id='8' />
+      <simple-id uuid='{061BBA0F-151D-4105-BAEE-886305CFB585}' />
     </window>
   </windows>
 </workbook>
